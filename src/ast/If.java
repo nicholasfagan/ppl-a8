@@ -8,7 +8,11 @@ public class If implements Expression{
 	Expression thenExpr;
 	Expression elseExpr; //optional
 	public If(ParseTree pt) {
-		// TODO Auto-generated constructor stub
+		condition = Expression.eval(pt.getChildren()[1]).get(0);
+		thenExpr = Expression.eval(pt.getChildren()[2]).get(0);
+		if(pt.getChildren()[3].getChildren().length > 0) {
+			elseExpr = Expression.eval(pt.getChildren()[3].getChildren()[0].getChildren()[1].getChildren()[0]).get(0);
+		} else elseExpr = null;
 	}
 	public String toString() {
 		return this.string_rep();

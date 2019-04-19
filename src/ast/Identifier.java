@@ -1,8 +1,6 @@
 package ast;
 
-import scanner.Token;
-
-public class Identifier {
+public class Identifier implements Expression {
 	String name;
 	int hops; //number of hops to the scope with this defined, or -1 if UNDEFINIED.
 
@@ -12,7 +10,17 @@ public class Identifier {
 		// TODO Auto-generated constructor stub
 	}
 	public String toString() {
-		return this.getClass().getSimpleName() + " [" + name + "; " + hops + "]";
+		return this.string_rep();
+	}
+	@Override
+	public String attributes() {
+		// TODO Auto-generated method stub
+		return name + "; " + hops;
+	}
+	@Override
+	public Object[] children() {
+		// TODO Auto-generated method stub
+		return new Object[0];
 	}
 
 }

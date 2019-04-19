@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import parser.NonTerminal;
 import parser.ParseTree;
 import scanner.Token;
@@ -19,9 +22,26 @@ public class Assignment implements Expression {
 					expression = new Function(pt.getChildren()[1].getChildren()[2], pt.getChildren()[1].getChildren()[4]);
 				break;
 			case LetExpression:
+				// named let
 				id_name = ((Token)pt.getChildren()[1].getChildren()[0].getData()).getRep();
 				id = new Identifier(id_name,0);
-				expression= new Function(pt.getChildren()[1].getChildren()[0], pt.getChildren()[2]);
+				Function f = new Function(pt.getChildren()[1].getChildren()[0], pt.getChildren()[2]);
+				expression = f;
+				//get any declarations (the func name)
+				for(Expression e : f.children) {
+					if(e instanceof Assignment) {
+						f.attributes.add(((Assignment)e).id.name);
+					}
+				}
+				//get the args and default values;
+				List<ParseTree> vardefs = new ArrayList<ParseTree>();
+				vardefs = getVarDefs(pt.getChildren()[1].getChildren()[2],vardefs);
+				FunCall fc = new FunCall(this.id);
+				f.children.add(fc);
+				for(ParseTree vd : vardefs) {
+					fc.args.addAll(Expression.eval(vd.getChildren()[2]));
+					f.arguments.add(((Token)vd.getChildren()[1].getData()).getRep());
+				}
 				
 				break;
 			default:
@@ -31,6 +51,17 @@ public class Assignment implements Expression {
 		}
 		
 		// TODO Auto-generated constructor stub
+	}
+	public List<ParseTree> getVarDefs(ParseTree t, List<ParseTree> l) {
+		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
+			return l;
+		} else {
+			l.add(t.getChildren()[0]);
+			if(t.getChildren()[1].getChildren() == null)
+				return l;
+			else 
+				return getVarDefs(t.getChildren()[1].getChildren()[0],l);
+		}
 	}
 	public String toString() {
 		return this.string_rep();

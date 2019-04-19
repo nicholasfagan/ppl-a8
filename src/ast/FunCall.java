@@ -10,8 +10,22 @@ public class FunCall implements Expression {
 	List<Expression> args; // what arguuments are given?
 
 	public FunCall(ParseTree pt) {
+		id = new Identifier("test",0);
 		args = new ArrayList<Expression>();
 		// TODO Auto-generated constructor stub
+	}
+	public FunCall(Identifier id) {
+		this.id = id;
+		args = new ArrayList<Expression>();
+		
+	}
+	public FunCall(Identifier id,List<Expression> args) {
+		this.id = id;
+		this.args=args;
+		
+	}
+	public String toString() {
+		return this.string_rep();
 	}
 	@Override
 	public String attributes() {
@@ -20,7 +34,6 @@ public class FunCall implements Expression {
 
 	@Override
 	public Object[] children() {
-		
 		Object[] a = args.toArray();
 		Object[] res = new Object[a.length+1];
 		res[0]=id;

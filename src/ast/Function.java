@@ -27,8 +27,7 @@ public class Function implements Expression {
 			return l;
 		} else {
 			ParseTree p = pt.getChildren()[1].getChildren()[0].getChildren()[0];
-			Expression e  = Expression.eval(p);
-			l.add(e);
+			l.addAll(Expression.eval(p));
 			return getStmts(pt.getChildren()[1].getChildren()[2],l);
 		}
 		

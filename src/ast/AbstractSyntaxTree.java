@@ -9,15 +9,15 @@ public class AbstractSyntaxTree  {
 	public AbstractSyntaxTree(ParseTree pt) {
 		List<ParseTree> pts = new ArrayList<ParseTree>();
 		pts = readProgram(pt, pts);
-		List<Expression> es = new ArrayList<Expression>();
+		List<Expression> ess = new ArrayList<Expression>();
 		List<String> a = new ArrayList<String>();
 		for(int i = 0; i < pts.size(); i++) {
-			Expression e = Expression.eval(pts.get(i));
-			es.add(e);
-			if(e instanceof Assignment)
+			List<Expression> es = Expression.eval(pts.get(i));
+			ess.addAll(es);
+			for(Expression e : es) if(e instanceof Assignment)
 				a.add(((Assignment)e).id.name);
 		}
-		scope = new Scope(es,a);
+		scope = new Scope(ess,a);
 	}
 	static List<ParseTree> readProgram(ParseTree pt, List<ParseTree> l) {
 		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {
