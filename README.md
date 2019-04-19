@@ -39,6 +39,7 @@ What has been done so far:
 + Printing of the AST
 
 What needs to be done:
-+ Converting the ParseTree to AbstractSyntaxTree (This is most of the work)
++ The ```Expression.eval()``` function bust be filled out more.
++ Still need to implement a reverse search for finding how many static links an identifier will need. I'm thinking to give every Expression a parent and just search for the nearest enclosing scope with the required Identifier.
++ When displaying the static link count, need to say UNDEFINED instead of -1.
 
-The ```Expression.eval()``` function bust be filled out.
