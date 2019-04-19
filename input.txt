@@ -1,0 +1,5 @@
+(define (factorial n)
+	(let fact ((a 1)(i 1))
+		(if (= n i)
+				(* a i)
+				(fact (* a i) (+ i 1)))))
