@@ -2,16 +2,16 @@ package ast;
 
 import parser.ParseTree;
 
-public class If implements Expression{
-
+public class If extends Expression{
 	Expression condition;
 	Expression thenExpr;
 	Expression elseExpr; //optional
-	public If(ParseTree pt) {
-		condition = Expression.eval(pt.getChildren()[1]).get(0);
-		thenExpr = Expression.eval(pt.getChildren()[2]).get(0);
+	public If(Expression parent,ParseTree pt) {
+		super(parent);
+		condition = Expression.eval(this,pt.getChildren()[1]).get(0);
+		thenExpr = Expression.eval(this,pt.getChildren()[2]).get(0);
 		if(pt.getChildren()[3].getChildren().length > 0) {
-			elseExpr = Expression.eval(pt.getChildren()[3].getChildren()[0].getChildren()[1].getChildren()[0]).get(0);
+			elseExpr = Expression.eval(this,pt.getChildren()[3].getChildren()[0].getChildren()[1].getChildren()[0]).get(0);
 		} else elseExpr = null;
 	}
 	public String toString() {

@@ -5,10 +5,11 @@ import java.util.List;
 
 import parser.ParseTree;
 
-public class Sequence implements Expression {
-
+public class Sequence extends Expression {
 	List<Expression> children; //all the expressions in the scope
-	public Sequence(ParseTree pt) {
+	public Sequence(Expression parent,ParseTree pt) {
+		super(parent);
+
 		children = new ArrayList<Expression>();
 		// TODO Auto-generated constructor stub
 	}

@@ -1,9 +1,10 @@
 package ast;
 
-public class Number implements Expression {
+public class Number extends Expression {
 
 	String value;
-	public Number(String n) {
+	public Number(Expression parent, String n) {
+		super(parent);
 		value=n;
 	}
 	public String toString() {

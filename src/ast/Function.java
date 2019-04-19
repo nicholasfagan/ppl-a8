@@ -6,11 +6,12 @@ import java.util.List;
 import parser.ParseTree;
 import scanner.Token;
 
-public class Function implements Expression {
+public class Function extends Expression {
 	List<Expression> children; //all the expressions in the scope
 	List<String> attributes; //list of IDENTIFIERS for things declared in this scope.
 	List<String> arguments;
-	public Function(ParseTree args, ParseTree body) {
+	public Function(Expression parent,ParseTree args, ParseTree body) {
+		super(parent);
 		children = new ArrayList<Expression>();
 		attributes = new ArrayList<String>();
 		arguments = new ArrayList<String>();
@@ -27,7 +28,7 @@ public class Function implements Expression {
 			return l;
 		} else {
 			ParseTree p = pt.getChildren()[1].getChildren()[0].getChildren()[0];
-			l.addAll(Expression.eval(p));
+			l.addAll(Expression.eval(this, p));
 			return getStmts(pt.getChildren()[1].getChildren()[2],l);
 		}
 		

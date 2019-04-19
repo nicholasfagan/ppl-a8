@@ -1,13 +1,49 @@
 package ast;
 
-public class Identifier implements Expression {
+public class Identifier extends Expression {
 	String name;
 	int hops; //number of hops to the scope with this defined, or -1 if UNDEFINIED.
 
-	public Identifier(String name, int hops) {
+	public Identifier(Expression parent,String name, int hops) {
+		super(parent);
 		this.name=name;
 		this.hops=hops;
-		// TODO Auto-generated constructor stub
+	}
+	public Identifier(Expression parent, String name) {
+		super(parent);
+		this.name=name;
+		this.hops = -1;
+		
+	}
+	public void resolve_hops() {
+		int i = 0;
+		Expression e = this.parent;
+		System.out.print(name + " ");
+		while(e != null) {
+			System.out.print("-> " + e.getClass().getSimpleName());
+			if(e instanceof Function) {
+				if(((Function)e).attributes.contains(name)
+						|| ((Function)e).arguments.contains(name)) {
+					System.out.println("Fun contains " + name);
+					this.hops = i;
+					break;
+				}
+				i++;
+			}
+			else if(e instanceof Scope) {
+				if(((Scope)e).attributes.contains(name)) {
+					System.out.println("Scope contains " + name);
+					this.hops = i;
+					break;
+				}
+				i++;
+			}
+			e = e.parent;
+		}
+		if(e ==  null) {
+			this.hops = -1;
+			System.out.println(" -> UNDEFINED");
+		}
 	}
 	public String toString() {
 		return this.string_rep();
@@ -15,7 +51,7 @@ public class Identifier implements Expression {
 	@Override
 	public String attributes() {
 		// TODO Auto-generated method stub
-		return name + "; " + hops;
+		return name + "; " + (hops == -1 ? "UNDEFINED" : hops);
 	}
 	@Override
 	public Object[] children() {

@@ -9,9 +9,13 @@ import parser.ParseTree;
 import scanner.Token;
 import scanner.TokenType;
 
-public interface Expression {
-	String attributes();
-	Object[] children();
+public class Expression {
+	Expression parent;
+	Expression (Expression parent) {
+		this.parent=parent;
+	}
+	String attributes() {return null;};
+	Object[] children() {return null;};
 	static final String vline = "\u2502";   // '|'   (but taller)
 	static final String hline = "\u2500";   // '-'   (but wider)
 	static final String vhsplit = "\u251C"; // '|-'  (but one char)
@@ -21,7 +25,7 @@ public interface Expression {
 	static final String Split = vhsplit + hline + " ";
 	static final String End   = vhend + hline + " ";
 	static final String Space = "   ";
-	public default String string_rep() {
+	public String string_rep() {
 		String res = "";
 		if(attributes()!= "")
 			res += this.getClass().getSimpleName() + " [" + this.attributes() + "]\n";
@@ -55,7 +59,7 @@ public interface Expression {
 		return res;
 		
 	}
-	static List<Expression> eval(ParseTree pt) {
+	static List<Expression> eval(Expression parent,ParseTree pt) {
 		List<Expression> res = new ArrayList<Expression>();
 		if(pt != null && pt.getData() instanceof NonTerminal) {
 			NonTerminal nt = (NonTerminal)(pt.getData());
@@ -66,16 +70,16 @@ public interface Expression {
 				break;
 			case Definition:
 				
-				res.add( new Assignment(pt));
+				res.add( new Assignment(parent,pt));
 				return res;
 			case FunCall:
 				List<Expression> params = new ArrayList<Expression>();
-				params = getExpr(pt.getChildren()[1],params);
+				params = getExpr(parent,pt.getChildren()[1],params);
 				
-				res.add( new FunCall(new Identifier(((Token)pt.getChildren()[0].getData()).getRep(),-1), params));
+				res.add( new FunCall(parent,new Identifier(parent,((Token)pt.getChildren()[0].getData()).getRep(),-1), params));
 				return res;
 			case IfExpression:
-				res.add(new If(pt));
+				res.add(new If(parent,pt));
 				return res;
 			case Lambda:
 				break;
@@ -86,7 +90,7 @@ public interface Expression {
 				if(pt.getChildren()[1].getChildren()[0].getData() instanceof Token 
 						&& ((Token)pt.getChildren()[1].getChildren()[0].getData()).getType() == TokenType.IDENTIFIER) {
 					//Its a named let
-					Assignment a = new Assignment(pt);
+					Assignment a = new Assignment(parent,pt);
 					res.add(a);
 					FunCall fc = (FunCall)((Function)a.expression).children.remove(((Function)a.expression).children.size()-1);
 					res.add(fc);
@@ -101,10 +105,10 @@ public interface Expression {
 			case Expression:
 				if(pt.getChildren().length > 1) {
 					//bracketed
-					return Expression.eval(pt.getChildren()[1].getChildren()[0]);
+					return Expression.eval(parent,pt.getChildren()[1].getChildren()[0]);
 				}else {
 					//non-bracketed
-					return Expression.eval(pt.getChildren()[0].getChildren()[0]);
+					return Expression.eval(parent,pt.getChildren()[0].getChildren()[0]);
 				}
 			case QuoteExpression:
 				break;
@@ -127,10 +131,10 @@ public interface Expression {
 			case CHAR:
 				break;
 			case IDENTIFIER:
-				res.add(new Identifier(t.getRep(),-1));
+				res.add(new Identifier(parent,t.getRep()));
 				return res;
 			case NUMBER:
-				res.add(new Number(t.getRep()));
+				res.add(new Number(parent,t.getRep()));
 				return res;
 			case STRING:
 				break;
@@ -141,12 +145,12 @@ public interface Expression {
 		}
 		return null;
 	}
-	static strictfp List<Expression> getExpr(ParseTree pt, List<Expression> l){
+	static strictfp List<Expression> getExpr(Expression parent,ParseTree pt, List<Expression> l){
 		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {
 			return l;
 		} else {
-			l.addAll(Expression.eval(pt.getChildren()[0]));
-			return getExpr(pt.getChildren()[1],l);
+			l.addAll(Expression.eval(parent,pt.getChildren()[0]));
+			return getExpr(parent,pt.getChildren()[1],l);
 		}
 		
 	}

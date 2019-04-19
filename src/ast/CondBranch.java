@@ -2,10 +2,11 @@ package ast;
 
 import parser.ParseTree;
 
-public class CondBranch implements Expression{
+public class CondBranch extends Expression{
 	Expression condition;
 	Sequence expressions;
-	public CondBranch(ParseTree pt) {
+	public CondBranch(Expression parent,ParseTree pt) {
+		super(parent);
 
 		// TODO Auto-generated constructor stub
 	}

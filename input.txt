@@ -5,3 +5,5 @@
     (if (= i n)
       cur
       (fib cur (+ prev cur) (+ i 1)))))
+
+(fibonacci 10)

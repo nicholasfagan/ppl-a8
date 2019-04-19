@@ -5,10 +5,11 @@ import java.util.List;
 
 import parser.ParseTree;
 
-public class Cond implements Expression{
+public class Cond extends Expression{
 	
 	List<CondBranch> branches;
-	public Cond(ParseTree pt) {
+	public Cond(Expression parent,ParseTree pt) {
+		super(parent);
 		branches = new ArrayList<CondBranch>();
 		// TODO Auto-generated constructor stub
 	}

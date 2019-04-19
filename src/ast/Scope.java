@@ -1,17 +1,15 @@
 package ast;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import parser.NonTerminal;
-import parser.ParseTree;
 
-public class Scope implements Expression {
+public class Scope extends Expression {
 
 	List<Expression> children; //all the expressions in the scope
 	List<String> attributes; //list of IDENTIFIERS for things declared in this scope.
 	
-	public Scope(List<Expression> children, List<String> attributes) {
+	public Scope(Expression parent,List<Expression> children, List<String> attributes) {
+		super(parent);
 		this.children = children;
 		this.attributes = attributes;
 	}

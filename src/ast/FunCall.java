@@ -1,25 +1,21 @@
 package ast;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
-import parser.ParseTree;
 
-public class FunCall implements Expression {
+public class FunCall extends Expression {
 	Identifier id; // what function is it calling?
 	List<Expression> args; // what arguuments are given?
 
-	public FunCall(ParseTree pt) {
-		id = new Identifier("test",0);
-		args = new ArrayList<Expression>();
-		// TODO Auto-generated constructor stub
-	}
-	public FunCall(Identifier id) {
+	public FunCall(Expression parent,Identifier id) {
+		super(parent);
 		this.id = id;
 		args = new ArrayList<Expression>();
-		
 	}
-	public FunCall(Identifier id,List<Expression> args) {
+	public FunCall(Expression parent,Identifier id,List<Expression> args) {
+		super(parent);
 		this.id = id;
 		this.args=args;
 		
