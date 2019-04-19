@@ -25,9 +25,11 @@ java -classpath bin ast.ASTBuilder input.txt
 The program scans and tokenizes the input using regular expressions.
 Then the tokenized output is piped to the Parser,
 which implements a recursive descent parser using a transformed grammar.
-A text file describing the grammar is available in ``` grammar.txt ``` .
 The grammar is hard coded in the program, 
 in the NonTerminal class.
 Then an ASTBuilder takes the ParseTree and creates an AbstractSyntaxTree.
+Each Node in the AST is an ```Expression```.
+There is an ```eval()``` function which should do most of the 
+translation from ParseTree to AbstractSyntaxTree.
 
 
