@@ -32,4 +32,13 @@ Each Node in the AST is an ```Expression```.
 There is an ```eval()``` function which should do most of the 
 translation from ParseTree to AbstractSyntaxTree.
 
+## TODO
 
+What has been done so far:
++ Basic structure
++ Printing of the AST
+
+What needs to be done:
++ Converting the ParseTree to AbstractSyntaxTree (This is most of the work)
+
+The ```Expression.eval()``` function bust be filled out.
