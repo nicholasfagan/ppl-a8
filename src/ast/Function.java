@@ -16,7 +16,11 @@ public class Function implements Expression {
 		arguments = new ArrayList<String>();
 		arguments = getArgs(args,arguments);
 		children = getStmts(body,children);
-		// TODO Auto-generated constructor stub
+		for(Expression e : children) {
+			if(e instanceof Assignment) {
+				attributes.add( ((Assignment)e).id.name );
+			}
+		}
 	}
 	private List<Expression> getStmts(ParseTree pt, List<Expression> l) {
 		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {

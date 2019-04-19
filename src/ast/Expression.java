@@ -1,10 +1,10 @@
 package ast;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import parser.NonTerminal;
 import parser.ParseTree;
+import scanner.Token;
+import scanner.TokenType;
 
 public interface Expression {
 	String attributes();
@@ -56,10 +56,7 @@ public interface Expression {
 			case CondExpression:
 				break;
 			case Definition:
-				List<String> a = new ArrayList<String>();
-				List<Expression> e = new ArrayList<Expression>();
-
-				return new Scope(e,a);
+				return new Assignment(pt);
 			case FunCall:
 				break;
 			case IfExpression:
@@ -67,8 +64,20 @@ public interface Expression {
 			case Lambda:
 				break;
 			case LetExpression:
-				break;
-			case Program:
+				// can be a named let 
+				//   (which should be an assignment of a function followed by a funcall)
+				// or a scope.
+				if(pt.getChildren()[1].getChildren()[0].getData() instanceof Token 
+						&& ((Token)pt.getChildren()[1].getChildren()[0].getData()).getType() == TokenType.IDENTIFIER) {
+					//Its a named let
+					Assignment a = new Assignment(pt);
+					
+					return a;
+				} else {
+					//its a scope.
+					//return new Scope(pt);
+					
+				}
 				break;
 			case QuoteExpression:
 				break;

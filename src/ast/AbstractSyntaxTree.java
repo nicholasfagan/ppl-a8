@@ -1,22 +1,33 @@
 package ast;
 
+import java.util.ArrayList;
+import java.util.List;
 import parser.ParseTree;
 
 public class AbstractSyntaxTree  {
-	Scope[] scopes;
+	Scope scope;
 	public AbstractSyntaxTree(ParseTree pt) {
-		System.out.println(pt);
-		if(pt != null && pt.getChildren() != null)
-			scopes = new Scope[pt.getChildren().length-1];
-		else
-			scopes = new Scope[0];
-		for(int i = 0; i < pt.getChildren().length-1; i++) {
-			scopes[i] = (Scope) Expression.eval(pt.getChildren()[i].getChildren()[1].getChildren()[0]);
+		List<ParseTree> pts = new ArrayList<ParseTree>();
+		pts = readProgram(pt, pts);
+		List<Expression> es = new ArrayList<Expression>();
+		List<String> a = new ArrayList<String>();
+		for(int i = 0; i < pts.size(); i++) {
+			Expression e = Expression.eval(pts.get(i));
+			es.add(e);
+			if(e instanceof Assignment)
+				a.add(((Assignment)e).id.name);
+		}
+		scope = new Scope(es,a);
+	}
+	static List<ParseTree> readProgram(ParseTree pt, List<ParseTree> l) {
+		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {
+			return l;
+		}else {
+			l.add(pt.getChildren()[0].getChildren()[1].getChildren()[0]);
+			return readProgram(pt.getChildren()[1],l);
 		}
 	}
 	public String toString() {
-		String res = "";
-		if (scopes != null) for (Scope s : scopes) if(s != null) res += s.toString();
-		return res;
+		return scope.toString();
 	}
 }
