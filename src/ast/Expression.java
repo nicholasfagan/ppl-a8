@@ -69,13 +69,11 @@ public class Expression {
 			case CondExpression:
 				break;
 			case Definition:
-				
 				res.add( new Assignment(parent,pt));
 				return res;
 			case FunCall:
 				List<Expression> params = new ArrayList<Expression>();
 				params = getExpr(parent,pt.getChildren()[1],params);
-				
 				res.add( new FunCall(parent,new Identifier(parent,((Token)pt.getChildren()[0].getData()).getRep(),-1), params));
 				return res;
 			case IfExpression:
@@ -87,21 +85,43 @@ public class Expression {
 				// can be a named let 
 				//   (which should be an assignment of a function followed by a funcall)
 				// or a scope.
+				
 				if(pt.getChildren()[1].getChildren()[0].getData() instanceof Token 
-						&& ((Token)pt.getChildren()[1].getChildren()[0].getData()).getType() == TokenType.IDENTIFIER) {
+						&&
+						((Token)(pt.getChildren()[1].getChildren()[0].getData())).getType() == TokenType.IDENTIFIER) {
 					//Its a named let
 					Assignment a = new Assignment(parent,pt);
 					res.add(a);
+					//named let has to call itself. grab the funcall (assignment will have made it last child).
 					FunCall fc = (FunCall)((Function)a.expression).children.remove(((Function)a.expression).children.size()-1);
 					res.add(fc);
 					
 					return res;
 				} else {
 					//its a scope.
-					//return new Scope(pt);
+					List<Expression> stmts = new ArrayList<Expression>();
+					List<ParseTree> x = new ArrayList<ParseTree>();
+					x = getStmts(pt.getChildren()[2],x);
 					
+					List<String> vars = new ArrayList<String>();
+					List<ParseTree> vardefs = new ArrayList<ParseTree>();
+					vardefs = getVarDefs(pt.getChildren()[1].getChildren()[1],vardefs);
+					
+					Scope s = new Scope(parent,stmts,vars);
+					
+					for(ParseTree p : vardefs) {
+						String vid = ((Token)p.getChildren()[1].getData()).getRep();
+						Assignment a = new Assignment(s,vid,eval(s,p.getChildren()[2]).get(0));
+						vars.add(vid);
+						stmts.add(a);
+					}
+					
+					
+					for(ParseTree p : x) stmts.addAll(Expression.eval(s, p));
+					res.add(s);
+					
+					return res;
 				}
-				break;
 			case Expression:
 				if(pt.getChildren().length > 1) {
 					//bracketed
@@ -153,6 +173,32 @@ public class Expression {
 			return getExpr(parent,pt.getChildren()[1],l);
 		}
 		
+	}
+	static List<ParseTree> getVarDefs(ParseTree t, List<ParseTree> l) {
+		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
+			return l;
+		} else {
+			l.add(t.getChildren()[0]);
+			if(t.getChildren()[1].getChildren() == null || t.getChildren()[1].getChildren().length == 0) {
+				return l;
+			}
+			else
+				return getVarDefs(t.getChildren()[1].getChildren()[0],l);
+		}
+	}
+	static List<ParseTree> getStmts(ParseTree t, List<ParseTree> l) {
+		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
+			return l;
+		} else {
+			if(t.getChildren().length == 1) {
+				//no brack?
+				return l;
+			} else {
+				l.add(t.getChildren()[1].getChildren()[0].getChildren()[0]);
+				return getStmts(t.getChildren()[1].getChildren()[2],l);
+			}
+			
+		}
 	}
 
 }

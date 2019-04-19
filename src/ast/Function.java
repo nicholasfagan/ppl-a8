@@ -16,14 +16,17 @@ public class Function extends Expression {
 		attributes = new ArrayList<String>();
 		arguments = new ArrayList<String>();
 		arguments = getArgs(args,arguments);
-		children = getStmts(body,children);
+		List<ParseTree> stmts = new ArrayList<ParseTree>();
+		stmts = getStmts(body,stmts);
+		for(ParseTree t : stmts)
+			children.addAll(Expression.eval(this, t));
 		for(Expression e : children) {
 			if(e instanceof Assignment) {
 				attributes.add( ((Assignment)e).id.name );
 			}
 		}
 	}
-	private List<Expression> getStmts(ParseTree pt, List<Expression> l) {
+	/*private List<Expression> getStmts(ParseTree pt, List<Expression> l) {
 		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {
 			return l;
 		} else {
@@ -32,7 +35,7 @@ public class Function extends Expression {
 			return getStmts(pt.getChildren()[1].getChildren()[2],l);
 		}
 		
-	}
+	}*/
 	private List<String> getArgs(ParseTree arglist, List<String> a) {
 		if(arglist == null || arglist.getChildren() == null || arglist.getChildren().length == 0) {
 			return a;

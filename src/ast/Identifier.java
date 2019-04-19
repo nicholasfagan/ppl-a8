@@ -18,13 +18,10 @@ public class Identifier extends Expression {
 	public void resolve_hops() {
 		int i = 0;
 		Expression e = this.parent;
-		System.out.print(name + " ");
 		while(e != null) {
-			System.out.print("-> " + e.getClass().getSimpleName());
 			if(e instanceof Function) {
 				if(((Function)e).attributes.contains(name)
 						|| ((Function)e).arguments.contains(name)) {
-					System.out.println("Fun contains " + name);
 					this.hops = i;
 					break;
 				}
@@ -32,7 +29,6 @@ public class Identifier extends Expression {
 			}
 			else if(e instanceof Scope) {
 				if(((Scope)e).attributes.contains(name)) {
-					System.out.println("Scope contains " + name);
 					this.hops = i;
 					break;
 				}
@@ -42,7 +38,6 @@ public class Identifier extends Expression {
 		}
 		if(e ==  null) {
 			this.hops = -1;
-			System.out.println(" -> UNDEFINED");
 		}
 	}
 	public String toString() {

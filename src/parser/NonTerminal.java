@@ -371,7 +371,7 @@ public enum NonTerminal {
 				
 				closebr = ti.next();
 				
-			if(!brack_match(openbr,closebr)) err(closebr);
+				if(!brack_match(openbr,closebr)) err(closebr);
 				
 				open = new ParseTree();
 				open.data = openbr;
@@ -379,7 +379,7 @@ public enum NonTerminal {
 				close = new ParseTree();
 				close.data = closebr;
 				if(id != null) pt.children = new ParseTree[] { id, open, vardefs, close };
-				
+				else pt.children = new ParseTree[] {open, vardefs, close};
 			}
 			return pt;
 		

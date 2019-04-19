@@ -10,6 +10,11 @@ import scanner.Token;
 public class Assignment extends Expression {
 	Identifier id;
 	Expression expression;
+	public Assignment(Expression parent, String vid, Expression expression) {
+		super(parent);
+		this.id=new Identifier(this,vid,0);
+		this.expression=expression;
+	}
 	public Assignment(Expression parent, ParseTree pt) {
 		super(parent);
 		if(pt.getData() != null && pt.getData() instanceof NonTerminal) {
@@ -54,7 +59,7 @@ public class Assignment extends Expression {
 		
 		// TODO Auto-generated constructor stub
 	}
-	public List<ParseTree> getVarDefs(ParseTree t, List<ParseTree> l) {
+	/*public List<ParseTree> getVarDefs(ParseTree t, List<ParseTree> l) {
 		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
 			return l;
 		} else {
@@ -64,7 +69,7 @@ public class Assignment extends Expression {
 			else 
 				return getVarDefs(t.getChildren()[1].getChildren()[0],l);
 		}
-	}
+	}*/
 	public String toString() {
 		return this.string_rep();
 	}

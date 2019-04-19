@@ -7,6 +7,7 @@ import parser.ParseTree;
 public class AbstractSyntaxTree  {
 	Scope scope;
 	public AbstractSyntaxTree(ParseTree pt) {
+		System.out.println(pt);
 		List<ParseTree> pts = new ArrayList<ParseTree>();
 		pts = readProgram(pt, pts);
 		List<Expression> ess = new ArrayList<Expression>();
@@ -71,8 +72,8 @@ public class AbstractSyntaxTree  {
 			l.add(pt.getChildren()[0].getChildren()[1].getChildren()[0]);
 			return readProgram(pt.getChildren()[1],l);
 		}
-	}
-	public String toString() {
+	} 
+ 	public String toString() {
 		return scope.toString();
 	}
 }
