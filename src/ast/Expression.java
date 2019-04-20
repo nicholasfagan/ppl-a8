@@ -59,15 +59,19 @@ public class Expression {
 		return res;
 		
 	}
-	static List<Expression> eval(Expression parent,ParseTree pt) {
+	static List<Expression> eval(Expression parent,ParseTree pt) throws Exception {
 		List<Expression> res = new ArrayList<Expression>();
 		if(pt != null && pt.getData() instanceof NonTerminal) {
 			NonTerminal nt = (NonTerminal)(pt.getData());
 			switch(nt) {
 			case BeginExpression:
-				break;
+				Sequence seq = new Sequence(parent,pt.getChildren()[1]);
+				res.add(seq);
+				return res;
 			case CondExpression:
-				break;
+				Cond c = new Cond(parent,pt);
+				res.add(c);
+				return res;
 			case Definition:
 				res.add( new Assignment(parent,pt));
 				return res;
@@ -80,7 +84,9 @@ public class Expression {
 				res.add(new If(parent,pt));
 				return res;
 			case Lambda:
-				break;
+				Function f = new Function(parent,pt.getChildren()[2],pt.getChildren()[4]);
+				res.add(f);
+				return res;
 			case LetExpression:
 				// can be a named let 
 				//   (which should be an assignment of a function followed by a funcall)
@@ -130,14 +136,19 @@ public class Expression {
 					//non-bracketed
 					return Expression.eval(parent,pt.getChildren()[0].getChildren()[0]);
 				}
+			case TickQuoteExpression:
 			case QuoteExpression:
-				break;
+				res.add(new Quote(parent,pt.getChildren()[1]));
+				return res;
 			case Statement:
 				break;
 			case Statements:
-				break;
-			case TickQuoteExpression:
-				break;
+				List<ParseTree> stmts = new ArrayList<ParseTree>();
+				stmts = getStmts(pt,stmts);
+				for(ParseTree t : stmts) {
+					res.addAll(Expression.eval(parent,t));
+				}
+				return res;
 			case VarDef:
 				break;
 			default:
@@ -147,9 +158,11 @@ public class Expression {
 			Token t = (Token)pt.getData();
 			switch(t.getType()) {
 			case BOOL:
-				break;
+				res.add(new ASTBool(parent,t.getRep()));
+				return res;
 			case CHAR:
-				break;
+				res.add(new ASTChar(parent,t.getRep()));
+				return res;
 			case IDENTIFIER:
 				res.add(new Identifier(parent,t.getRep()));
 				return res;
@@ -157,20 +170,25 @@ public class Expression {
 				res.add(new Number(parent,t.getRep()));
 				return res;
 			case STRING:
-				break;
+				res.add(new ASTString(parent,t.getRep()));
+				return res;
 			default:
 				break;
 				
 			}
 		}
-		return null;
+		throw new Exception("Dunno:" + pt);
 	}
-	static strictfp List<Expression> getExpr(Expression parent,ParseTree pt, List<Expression> l){
+	static strictfp List<Expression> getExpr(Expression parent,ParseTree pt, List<Expression> l) throws Exception{
 		if(pt == null || pt.getChildren() == null || pt.getChildren().length == 0) {
 			return l;
 		} else {
-			l.addAll(Expression.eval(parent,pt.getChildren()[0]));
-			return getExpr(parent,pt.getChildren()[1],l);
+			List<Expression> e = Expression.eval(parent, pt.getChildren()[0]);
+			if(e != null) l.addAll(e);
+			if(pt.getChildren()[1].getChildren() == null || pt.getChildren()[1].getChildren().length == 0)
+				return l;
+			else 
+				return getExpr(parent,pt.getChildren()[1],l);
 		}
 		
 	}
@@ -190,14 +208,32 @@ public class Expression {
 		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
 			return l;
 		} else {
-			if(t.getChildren().length == 1) {
-				//no brack?
-				return l;
+			if(! ((t.getChildren()[0].getData()) instanceof Token )) {
+				l.add(t.getChildren()[0].getChildren()[0].getChildren()[0]);
+				if(t.getChildren()[0].getChildren()[1] != null && t.getChildren()[0].getChildren()[1].getChildren() != null && t.getChildren()[0].getChildren()[1].getChildren().length != 0)
+					l = getStmts(t.getChildren()[0].getChildren()[1].getChildren()[0],l);
+				if(t.getChildren()[1].getChildren() != null && t.getChildren()[1].getChildren().length != 0) {
+					List<ParseTree> a = getStmts(t.getChildren()[1].getChildren()[0],l);
+					return a;
+				} else return l;
 			} else {
 				l.add(t.getChildren()[1].getChildren()[0].getChildren()[0]);
-				return getStmts(t.getChildren()[1].getChildren()[2],l);
+				if(t.getChildren()[1].getChildren().length > 2 && t.getChildren()[1].getChildren()[2] != null && t.getChildren()[1].getChildren()[2].getChildren() != null && t.getChildren()[1].getChildren()[2].getChildren().length != 0) {
+					List<ParseTree> a =  getStmts(t.getChildren()[1].getChildren()[2].getChildren()[0],l);
+					return a;
+				}else return l;
 			}
 			
+		}
+	}
+	static List<ParseTree> getCondBranches(ParseTree t, List<ParseTree> l) {
+		if(t == null || t.getChildren() == null || t.getChildren().length == 0) {
+			return l;
+		} else {
+			l.add(t.getChildren()[0]);
+			if(t.getChildren()[1].getChildren() != null && t.getChildren()[1].getChildren().length != 0)
+				return getCondBranches(t.getChildren()[1].getChildren()[0],l);
+			else return l;
 		}
 	}
 

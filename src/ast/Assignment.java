@@ -15,7 +15,7 @@ public class Assignment extends Expression {
 		this.id=new Identifier(this,vid,0);
 		this.expression=expression;
 	}
-	public Assignment(Expression parent, ParseTree pt) {
+	public Assignment(Expression parent, ParseTree pt) throws Exception {
 		super(parent);
 		if(pt.getData() != null && pt.getData() instanceof NonTerminal) {
 			switch((NonTerminal)pt.getData()) {

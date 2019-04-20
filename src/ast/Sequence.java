@@ -7,11 +7,12 @@ import parser.ParseTree;
 
 public class Sequence extends Expression {
 	List<Expression> children; //all the expressions in the scope
-	public Sequence(Expression parent,ParseTree pt) {
+	public Sequence(Expression parent,ParseTree pt) throws Exception {
 		super(parent);
-
 		children = new ArrayList<Expression>();
-		// TODO Auto-generated constructor stub
+		children.addAll(Expression.eval(this,pt));
+		
+	
 	}
 
 	public String toString() {

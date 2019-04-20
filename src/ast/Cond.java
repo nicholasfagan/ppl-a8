@@ -8,10 +8,14 @@ import parser.ParseTree;
 public class Cond extends Expression{
 	
 	List<CondBranch> branches;
-	public Cond(Expression parent,ParseTree pt) {
+	public Cond(Expression parent,ParseTree pt) throws Exception {
 		super(parent);
 		branches = new ArrayList<CondBranch>();
-		// TODO Auto-generated constructor stub
+		List<ParseTree> cb = new ArrayList<ParseTree>();
+		cb = getCondBranches(pt.getChildren()[1],cb);
+		for(ParseTree t : cb) {
+			branches.add(new CondBranch(this,t));
+		}
 	}
 	public String toString() {
 		return this.string_rep();

@@ -5,10 +5,10 @@ import parser.ParseTree;
 public class CondBranch extends Expression{
 	Expression condition;
 	Sequence expressions;
-	public CondBranch(Expression parent,ParseTree pt) {
+	public CondBranch(Expression parent,ParseTree pt) throws Exception {
 		super(parent);
-
-		// TODO Auto-generated constructor stub
+		condition = Expression.eval(this, pt.getChildren()[1]).get(0);
+		expressions = new Sequence(this,pt.getChildren()[2]);
 	}
 	public String toString() {
 		return this.string_rep();

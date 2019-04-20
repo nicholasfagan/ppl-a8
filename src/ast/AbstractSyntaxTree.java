@@ -6,25 +6,33 @@ import parser.ParseTree;
 
 public class AbstractSyntaxTree  {
 	Scope scope;
-	public AbstractSyntaxTree(ParseTree pt) {
-		System.out.println(pt);
+	public AbstractSyntaxTree(ParseTree pt) throws Exception {
 		List<ParseTree> pts = new ArrayList<ParseTree>();
 		pts = readProgram(pt, pts);
 		List<Expression> ess = new ArrayList<Expression>();
 		List<String> a = new ArrayList<String>();
+		List<Exception> err= new ArrayList<Exception>();
 		scope = new Scope(null,ess,a);
 		for(int i = 0; i < pts.size(); i++) {
-			List<Expression> es = Expression.eval(scope,pts.get(i));
-			ess.addAll(es);
-			for(Expression e : es) if(e instanceof Assignment)
-				a.add(((Assignment)e).id.name);
+			try {
+				List<Expression> es = Expression.eval(scope,pts.get(i));
+				ess.addAll(es);
+				for(Expression e : es) if(e instanceof Assignment)
+					a.add(((Assignment)e).id.name);
+			}catch(Exception e) {
+				err.add(e);
+			}
 		}
 		try {
 			resolve_names(scope);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		if(err.size() != 0) {
+			System.err.println("The following errors occurred during excecution:");
+			for(Exception e : err) e.printStackTrace();
+			
+		}
 	}
 	static void resolve_names(Expression e) throws Exception {
 		if (e != null) {

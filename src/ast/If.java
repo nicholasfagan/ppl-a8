@@ -6,7 +6,7 @@ public class If extends Expression{
 	Expression condition;
 	Expression thenExpr;
 	Expression elseExpr; //optional
-	public If(Expression parent,ParseTree pt) {
+	public If(Expression parent,ParseTree pt) throws Exception {
 		super(parent);
 		condition = Expression.eval(this,pt.getChildren()[1]).get(0);
 		thenExpr = Expression.eval(this,pt.getChildren()[2]).get(0);

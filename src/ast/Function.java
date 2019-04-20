@@ -10,7 +10,7 @@ public class Function extends Expression {
 	List<Expression> children; //all the expressions in the scope
 	List<String> attributes; //list of IDENTIFIERS for things declared in this scope.
 	List<String> arguments;
-	public Function(Expression parent,ParseTree args, ParseTree body) {
+	public Function(Expression parent,ParseTree args, ParseTree body) throws Exception {
 		super(parent);
 		children = new ArrayList<Expression>();
 		attributes = new ArrayList<String>();
